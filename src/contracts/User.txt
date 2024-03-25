@@ -1,0 +1,72 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.4;
+
+contract User{
+
+    address private userAddress;
+    uint256 _id = 0;
+    Expenses[] private expenses;
+
+    struct Expenses{
+        uint256 id;
+        string category;
+        uint amount;
+        uint date;
+        string description;
+        bool canceled;
+    }
+
+    constructor(address _userAddress){
+        userAddress = _userAddress;
+    }
+
+    function getUserAddress() public view returns(address){
+        return userAddress;
+    }
+
+    function getExpenses() public view returns(Expenses[] memory){
+        return expenses;
+    }
+
+    function addExpense(string memory _category, uint _amount, string memory _description) public {
+        uint _date = block.timestamp;
+        _id++;
+
+         Expenses memory expense = Expenses(_id, _category,_amount,_date,_description,false);
+
+         expenses.push(expense);
+    }
+
+    function setExpenseToBeCancelled(uint256 _idn) public {
+        uint256 arrayLength = expenses.length;
+
+        for (uint256 i = 0; i < arrayLength; i++) {
+        if (expenses[i].id == _idn) {
+            expenses[i].canceled = true;
+        }
+    }
+    }
+
+
+
+    function getExpensesByCategory(string memory _category) public view returns(Expenses[] memory){
+       uint256 arrayLength = expenses.length;
+    Expenses[] memory categoryExpenses = new Expenses[](arrayLength);
+    uint256 count = 0;
+
+    for (uint256 i = 0; i < arrayLength; i++) {
+        if (keccak256(bytes(expenses[i].category)) == keccak256(bytes(_category))) {
+            // If the category matches, add the expense to the result array
+            categoryExpenses[count] = expenses[i];
+            count++;
+        }
+    }
+
+    // Resize the array to remove any uninitialized elements
+    assembly {
+        mstore(categoryExpenses, count)
+    }
+
+    return categoryExpenses;
+    }
+}

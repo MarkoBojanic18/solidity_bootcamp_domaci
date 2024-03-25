@@ -1,0 +1,6 @@
+.round-box {
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  background-color: red; /* Change the color as needed */
+}

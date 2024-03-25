@@ -1,0 +1,63 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.4;
+
+import "./User.sol";
+
+contract UserFactory{
+
+    User[] private users;
+
+    function createUser() public {
+        User newUser = new User(msg.sender);
+
+        if(!checkNewUser(newUser)){
+            users.push(newUser);
+        }
+    }
+
+     function checkNewUser(User newUser)private view returns(bool){
+        uint arrayLength = users.length;
+
+        for(uint i = 0; i < arrayLength; i++){
+            if(users[i].getUserAddress() == newUser.getUserAddress()){
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    function checkIfUserExistInTheList()public view returns(bool){
+        uint arrayLength = users.length;
+
+        for(uint i = 0; i < arrayLength; i++){
+            if(users[i].getUserAddress() == msg.sender){
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    function createExpense(string memory _category, uint _amount, string memory _description) public {
+         uint arrayLength = users.length;
+
+        for(uint i = 0; i < arrayLength; i++){
+            if(users[i].getUserAddress() == msg.sender){
+                users[i].addExpense(_category,_amount,_description);
+            }
+        }
+    }
+
+    function getUserData() public view returns(User){
+         uint arrayLength = users.length;
+
+        for(uint i = 0; i < arrayLength; i++){
+            if(users[i].getUserAddress() == msg.sender){
+                return users[i];
+            }
+        }
+
+        return User(address(0));
+    }
+}
